@@ -1,0 +1,114 @@
+{% include "admin/polymorphic/edit_inline/stacked.html" %}
+<script type="text/javascript">
+  if (!$) {
+    var $ = django.jQuery
+  }
+
+  var setupSelects = function (panel) {
+    var fields = ['province', 'holiday']
+    fields.forEach(function (el) {
+      var f = panel.find('.field-' + el)
+      var fInput = f.find('input')
+      var value = fInput[0].value
+      fInput[0].outerHTML = '<select name="' + fInput[0].name + '" id="' + fInput[0].id + '" data-selected="' + value + '"></select>'
+    })
+  }
+
+  var setupHolidayOptions = function (panel) {
+    var hItem = panel.find('.field-holiday')
+    var hXHR = new XMLHttpRequest()
+    hXHR.onreadystatechange = function () {
+      if (hXHR.readyState == XMLHttpRequest.DONE) {
+        hItem.find('select')[0].innerHTML = hXHR.responseText
+        var selectedHoliday = hItem.find('select').data('selected')
+        if (selectedHoliday) {
+          hItem.find('select').find('option').each(function () {
+            if ($(this)[0].value === selectedHoliday) {
+              $(this).attr('selected', 1)
+            }
+          })
+        }
+      }
+    }
+    var selectedCountry = hItem.parent().find('.field-country').find('select')[0].value
+    var selectedProvince = hItem.parent().find('.field-province').find('select')[0].value
+    var hURL = "{% url 'ajax-load-holidays' %}?country=" + selectedCountry + "&province=" + selectedProvince
+    hXHR.open('GET', hURL)
+    hXHR.send()
+  }
+
+  var setupProvinceOptions = function (panel) {
+    var pItem = panel.find('.field-province')
+    var selectedCountry = pItem.parent().find('.field-country').find('select')[0].value
+    var pXHR = new XMLHttpRequest()
+    pXHR.onreadystatechange = function () {
+      if (pXHR.readyState == XMLHttpRequest.DONE) {
+        pItem.find('select')[0].innerHTML = pXHR.responseText
+        var selectedProvince = pItem.find('select').data('selected')
+        if (selectedProvince) {
+          pItem.find('select').find('option').each(function () {
+            if ($(this)[0].value === selectedProvince) {
+              $(this).attr('selected', 1)
+            }
+          })
+        }
+        // call setupHolidayOptions after finishing the request to prevent
+        // race-conditions
+        setupHolidayOptions(panel)
+      }
+    }
+    var pURL = "{% url 'ajax-load-provinces' %}?country=" + selectedCountry
+    pXHR.open('GET', pURL)
+    pXHR.send()
+  }
+
+  var setupCountryEvents = function (panel) {
+    panel.find('.field-country').change(function (e) {
+      var pItem = $(this).parent().find('.field-province')
+      var pXHR = new XMLHttpRequest()
+      pXHR.onreadystatechange = function () {
+        if (pXHR.readyState == XMLHttpRequest.DONE) {
+          pItem.find('select')[0].innerHTML = pXHR.responseText
+        }
+      }
+      var cURL = "{% url 'ajax-load-provinces' %}?country=" + e.target.value
+      pXHR.open('GET', cURL)
+      pXHR.send()
+    })
+  }
+
+  var setupHolidayEvents = function (panel) {
+    var changeHoliday = function () {
+      var selectedCountry = $(this).parent().find('.field-country').find('select')[0].value
+      var selectedProvince = $(this).parent().find('.field-province').find('select')[0].value
+      var hItem = $(this).parent().find('.field-holiday')
+      var hXHR = new XMLHttpRequest()
+      hXHR.onreadystatechange = function () {
+        if (hXHR.readyState == XMLHttpRequest.DONE) {
+          hItem.find('select')[0].innerHTML = hXHR.responseText
+        }
+      }
+      var hURL = "{% url 'ajax-load-holidays' %}?country=" + selectedCountry + "&province=" + selectedProvince
+      hXHR.open('GET', hURL)
+      hXHR.send()
+    }
+    panel.find('.field-country').change(changeHoliday)
+    panel.find('.field-province').change(changeHoliday)
+  }
+
+  var setupEvents = function (panel) {
+    setupCountryEvents(panel)
+    setupHolidayEvents(panel)
+  }
+
+  var setupTimeWizardHolidayRange = function () {
+    var panels = $('.inline-holidayrangeperiodmodel')
+    panels.each(function () {
+      setupSelects($(this))
+      setupProvinceOptions($(this))
+      setupEvents($(this))
+    })
+  }
+
+  setupTimeWizardHolidayRange()
+</script>
