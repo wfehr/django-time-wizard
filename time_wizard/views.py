@@ -1,6 +1,7 @@
 import holidays
 from django.shortcuts import render
 from django.utils.timezone import now
+
 from time_wizard.conf import TIME_WIZARD_COUNTRY_PROVINCES
 
 
