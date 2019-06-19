@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
+
 from time_wizard.conf import TIME_WIZARD_COUNTRIES
 from time_wizard.workarounds import NON_POLYMORPHIC_CASCADE
 

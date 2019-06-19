@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from time_wizard import views
 
 urlpatterns = [

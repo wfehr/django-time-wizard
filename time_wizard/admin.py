@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.utils.translation import ugettext_lazy as _
 from polymorphic.admin import (
     PolymorphicInlineSupportMixin, StackedPolymorphicInline,
 )
+
 from time_wizard.models import (
     AbsolutePeriodModel, HolidayRangePeriodModel, PeriodModel, TimeWizardModel,
 )
