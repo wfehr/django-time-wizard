@@ -9,19 +9,22 @@ Date and time dependend content manipulation.
     pip install django-time-wizard
     ```
 
-1. Add to your `INSTALLED_APPS`:
+2. Make sure to follow the installation steps for `django-polymorphic`
+
+
+3. Add to your `INSTALLED_APPS`:
 
     ```
     'time_wizard',
     ```
 
-2. Include the time_wizard admin URLs in your project urls.py:
+4. Include the time_wizard admin URLs in your project urls.py:
 
     ```
     url(^'admin/', include('time_wizard.urls')),
     ```
 
-3. Run `python manage.py migrate` to create the time_wizard models.
+5. Run `python manage.py migrate` to create the time_wizard models.
 
 ## Settings
 
@@ -29,8 +32,10 @@ Django-time-wizard uses the defined `countries` and `provinces`/`states` from
 `holidays`. Definitions need to be compatible with `holidays`. You can also
 define this yourself for your needs:
 
+    ```
     TIME_WIZARD_COUNTRIES = ['US', 'UK', 'DE', ...]
     TIME_WIZARD_COUNTRY_PROVINCES = {'US': ['AL', 'AK', ...], ...}
+    ```
 
 ## Requirements
 
