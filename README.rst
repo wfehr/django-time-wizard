@@ -2,7 +2,7 @@
 django-time-wizard
 ==================
 
-Date and time dependend content manipulation.
+Date and time dependent content manipulation.
 
 Quick start
 ===========
