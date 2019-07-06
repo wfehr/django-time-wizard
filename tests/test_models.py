@@ -1,6 +1,7 @@
 import datetime
 
 import holidays
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.utils.timezone import now
 from time_wizard.models import (
@@ -14,11 +15,14 @@ class TestTimeWizardModel(TestCase):
         self.now = now()
         self.now_earlier = self.now + datetime.timedelta(hours=-24)
         self.now_later = self.now + datetime.timedelta(hours=24)
+        self.ct = ContentType.objects.get(app_label='time_wizard',
+                                          model='timewizardmodel')
 
     def test_absolute_period_model(self):
         time_wizard = TimeWizardModel.objects.create()
         absolute_period = AbsolutePeriodModel.objects.create(
-            container=time_wizard,
+            content_type=self.ct,
+            object_id=time_wizard.id,
         )
         self.assertTrue(absolute_period.contains(self.now))
         absolute_period.start = self.now_later
@@ -33,7 +37,8 @@ class TestTimeWizardModel(TestCase):
         holiday_date, holiday = holidays.US(years=self.now.year).popitem()
         holiday_date = datetime.datetime.combine(holiday_date, self.now.time())
         holiday_range = HolidayRangePeriodModel.objects.create(
-            container=time_wizard,
+            content_type=self.ct,
+            object_id=time_wizard.id,
             country='US',
             holiday=holiday,
         )
@@ -58,7 +63,8 @@ class TestTimeWizardModel(TestCase):
         holiday_date, holiday = holidays.US(years=self.now.year).popitem()
         holiday_date = datetime.datetime.combine(holiday_date, self.now.time())
         holiday_range = HolidayRangePeriodModel.objects.create(
-            container=time_wizard,
+            content_type=self.ct,
+            object_id=time_wizard.id,
             country='US',
             holiday=holiday,
             time_value=4,
@@ -79,10 +85,30 @@ class TestTimeWizardModel(TestCase):
         time_wizard = TimeWizardModel.objects.create()
         self.assertFalse(time_wizard.is_published)
         absolute_period = AbsolutePeriodModel.objects.create(
-            container=time_wizard,
+            content_type=self.ct,
+            object_id=time_wizard.id,
             start=self.now_earlier,
         )
         self.assertTrue(time_wizard.is_published)
         absolute_period.end = self.now_earlier
         absolute_period.save()
         self.assertFalse(time_wizard.is_published)
+
+    def test_time_wizard_str(self):
+        time_wizard = TimeWizardModel.objects.create()
+        absolute_period_1 = AbsolutePeriodModel.objects.create(
+            content_type=self.ct,
+            object_id=time_wizard.id,
+            start=self.now_earlier,
+        )
+        self.assertEqual(str(absolute_period_1), str(time_wizard))
+        absolute_period_2 = AbsolutePeriodModel.objects.create(
+            content_type=self.ct,
+            object_id=time_wizard.id,
+            start=self.now_earlier,
+        )
+        self.assertEqual('{} - {}'.format(str(absolute_period_1),
+                                          str(absolute_period_2)),
+                         str(time_wizard))
+        time_wizard.name = 'Test time wizard'
+        self.assertEqual(time_wizard.name, str(time_wizard))
