@@ -15,7 +15,7 @@ setup(
     ],
     include_package_data=True,
     description='Date and time dependend content manipulation',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     url='https://github.com/wfehr/django-time-wizard',
     download_url='https://github.com/wfehr/django-time-wizard/tarball/master',
     author='Wolfgang Fehr',
