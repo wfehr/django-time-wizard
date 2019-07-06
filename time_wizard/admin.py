@@ -1,6 +1,6 @@
 from django.contrib import admin
 from polymorphic.admin import (
-    PolymorphicInlineSupportMixin, StackedPolymorphicInline,
+    GenericStackedPolymorphicInline, PolymorphicInlineSupportMixin,
 )
 
 from time_wizard.models import (
@@ -8,11 +8,11 @@ from time_wizard.models import (
 )
 
 
-class PeriodModelInline(StackedPolymorphicInline):
-    class AbsolutePeriodModelInline(StackedPolymorphicInline.Child):
+class PeriodModelInline(GenericStackedPolymorphicInline):
+    class AbsolutePeriodModelInline(GenericStackedPolymorphicInline.Child):
         model = AbsolutePeriodModel
 
-    class HolidayRangePeriodModelInline(StackedPolymorphicInline.Child):
+    class HolidayRangePeriodModelInline(GenericStackedPolymorphicInline.Child):
         model = HolidayRangePeriodModel
 
     model = PeriodModel
@@ -23,6 +23,9 @@ class PeriodModelInline(StackedPolymorphicInline):
     template = 'admin/edit_inline/holiday_stacked.html'
 
 
-@admin.register(TimeWizardModel)
-class PeriodModelAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
-    inlines = (PeriodModelInline,)
+class TimeWizardModelAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
+    model = TimeWizardModel
+    inlines = [PeriodModelInline]
+
+
+admin.site.register(TimeWizardModel, TimeWizardModelAdmin)
