@@ -1,51 +1,29 @@
 import datetime
 
 import holidays
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
 from time_wizard.conf import TIME_WIZARD_COUNTRIES
+from time_wizard.mixins import TimeWizardInlineMixin
 from time_wizard.workarounds import NON_POLYMORPHIC_CASCADE
-
-
-class TimeWizardModel(models.Model):
-    """
-    Model for the TimeWizard.
-    """
-    def copy_relations(self, old_instance):
-        # Copy PeriodModels
-        for periods in old_instance.periods.all():
-            # set pk + id to None: https://stackoverflow.com/a/25852807
-            periods.pk = None
-            periods.id = None
-            periods.container_id = self.id
-            periods.save()
-
-    @property
-    def is_published(self):
-        dt = now()
-        periods = PeriodModel.objects.filter(container_id=self.id)
-        for p in periods:
-            if p.contains(dt):
-                return True
-        return False
-
-    def __str__(self):
-        return ' - '.join([str(s) for s in
-                           PeriodModel.objects.filter(container_id=self.id)])
 
 
 class PeriodModel(PolymorphicModel):
     """
     Parent model for custom periods.
     """
-    container = models.ForeignKey(
-        TimeWizardModel,
+    content_type = models.ForeignKey(
+        'contenttypes.ContentType',
         on_delete=NON_POLYMORPHIC_CASCADE,
-        related_name="periods"
+        related_name='periods',
     )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey()
 
     def contains(self, date_time):
         raise NotImplementedError("Override method in child class!")
@@ -137,6 +115,7 @@ class HolidayRangePeriodModel(PeriodModel):
             holiday_dict = holiday_cls(**kwargs)
             selected_date = self._get_selected_holiday_date(holiday_dict)
             if selected_date is not None:
+                date_time = date_time.replace(tzinfo=None)
                 return self._contains_selected_range(date_time, selected_date)
         return False
 
@@ -149,23 +128,24 @@ class HolidayRangePeriodModel(PeriodModel):
         return selected_date
 
     def _contains_selected_range(self, date_time, selected_date):
+        time_zero = datetime.time(0)
         delta1 = datetime.timedelta(minutes=0)
         delta2 = datetime.timedelta(minutes=0)
         mins = self.time_value * int(self.time_unit) if self.time_unit else 0
-        if not self.range_position:
-            pass
-        elif self.range_position in ['before', 'after']:
+        if self.range_position == 'before':
             delta1 = datetime.timedelta(minutes=mins * -1)
+        elif self.range_position == 'after':
+            delta2 = datetime.timedelta(minutes=mins)
         elif self.range_position == 'both':
             delta1 = datetime.timedelta(minutes=mins * -1)
-            delta2 = datetime.timedelta(minutes=mins * 2)
+            delta2 = datetime.timedelta(minutes=mins)
         date1 = datetime.datetime.combine(
             selected_date + delta1,
-            self.start_time.time() if self.start_time else date_time.time())
+            self.start_time.time() if self.start_time else time_zero)
+        d3 = datetime.timedelta(days=1 if not self.end_time else 0)
         date2 = datetime.datetime.combine(
-            selected_date + delta2,
-            self.end_time.time() if self.end_time else date_time.time())
-        date_time = date_time.replace(tzinfo=None)
+            selected_date + delta2 + d3,
+            self.end_time.time() if self.end_time else time_zero)
         if date_time < date1 or date_time > date2:
             return False
         return True
@@ -174,22 +154,22 @@ class HolidayRangePeriodModel(PeriodModel):
         return 'HolidayRange [%s - %s]' % (self.country, self.holiday)
 
 
-class TimeWizardMixin(models.Model):
+class TimeWizardModel(TimeWizardInlineMixin, models.Model):
     """
-    Mixin to let models have a foreign-key-relation to the TimeWizard. Property
-    `is_published` is used to indicate if a TimeWizard is set wether or not
-    to show the contents/children.
+    Model for the TimeWizard.
     """
-    time_wizard = models.ForeignKey(
-        TimeWizardModel,
-        on_delete=models.SET_NULL,
+    name = models.CharField(
         blank=True,
-        null=True,
+        help_text=_('Optional name to identify the given TimeWizard.'),
+        max_length=255,
     )
 
-    class Meta:
-        abstract = True
-
-    @property
-    def is_published(self):
-        return self.time_wizard.is_published
+    def __str__(self):
+        if self.name:
+            return self.name
+        else:
+            ct = ContentType.objects.get(app_label='time_wizard',
+                                         model='timewizardmodel')
+            return ' - '.join([str(s) for s in
+                               PeriodModel.objects.filter(content_type=ct,
+                                                          object_id=self.id)])
