@@ -42,17 +42,19 @@ You can use the `TimeWizard` in different ways:
   * affects your database as the relation needs a new model field
   * example::
 
+      # models.py
       from time_wizard.mixins import TimeWizardMixin
       ...
       class MyModel(TimeWizardMixin, models.Model):
           ...
 
-* use the `PeriodModelInline` in the `admin`, for example:
+* use the `PeriodModelInline` in the `admin`
 
   * each model of yours can have different time-settings
-  * does not effect your database as it works with a generic relationship
+  * does not affect your database as it works with a generic relationship
   * example::
 
+      # admin.py
       from time_wizard.admin import PeriodModelInline
       from polymorphic.admin import PolymorphicInlineSupportMixin
       ...
