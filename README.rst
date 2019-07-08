@@ -54,6 +54,12 @@ You can use the `TimeWizard` in different ways:
   * does not affect your database as it works with a generic relationship
   * example::
 
+      # models.py
+      from time_wizard.mixins import TimeWizardInlineMixin
+      ...
+      class MyModel(TimeWizardInlineMixin, models.Model):
+          ...
+
       # admin.py
       from time_wizard.admin import PeriodModelInline
       from polymorphic.admin import PolymorphicInlineSupportMixin
@@ -61,6 +67,9 @@ You can use the `TimeWizard` in different ways:
       class MyModelAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
           inlines = [PeriodModelInline]
           ...
+
+* in both ways use `is_published` on your model to indicate if the content
+  is shown or not.
 
 Settings
 ========
