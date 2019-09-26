@@ -1,7 +1,0 @@
-Generell:
-  - django-time-wizard "abschließen"
-  - djangocms-time-wizard "abschließen"
-  - tests für django-time-wizard + djangocms-time-wizard (erweitern/unterteilen)
-
-  - Docstrings etc. einfügen
-  - Vorbereitungen für Paketveröffentlichung
