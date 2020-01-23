@@ -7,10 +7,8 @@ setup(
     version=__version__,
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        # django-polymorphic is currently not working with django 2.2
-        # https://github.com/django-polymorphic/django-polymorphic/issues/382
-        'django>=1.11,<2.2',
-        'django-polymorphic>=0.7,<2.1',
+        'django>=1.11.27,<3.0',
+        'django-polymorphic>=0.7',
         'holidays==0.9.10',
     ],
     include_package_data=True,
