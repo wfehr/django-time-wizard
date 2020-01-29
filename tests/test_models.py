@@ -47,15 +47,17 @@ class TestTimeWizardModel(TestCase):
         self.assertTrue(holiday_range.contains(holiday_date))
         self.assertFalse(holiday_range.contains(holiday_date_earlier))
         self.assertFalse(holiday_range.contains(holiday_date_later))
-        holiday_time_earlier = holiday_date + datetime.timedelta(hours=-10)
-        holiday_time_later = holiday_date + datetime.timedelta(hours=10)
+        holiday_time_earlier = (holiday_date +
+                                datetime.timedelta(hours=-1)).time()
+        holiday_time_later = (holiday_date +
+                              datetime.timedelta(hours=1)).time()
         holiday_range.start_time = holiday_time_later
         self.assertFalse(holiday_range.contains(holiday_date))
         holiday_range.start_time = holiday_time_earlier
         self.assertTrue(holiday_range.contains(holiday_date))
         holiday_range.end_time = holiday_time_later
         self.assertTrue(holiday_range.contains(holiday_date))
-        holiday_range.end_time = self.now
+        holiday_range.end_time = self.now.time()
         self.assertFalse(holiday_range.contains(now()))
 
     def test_holiday_range_period_model_range(self):
