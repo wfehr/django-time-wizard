@@ -21,7 +21,7 @@ Quick start
 
 4. Include the time_wizard admin URLs in your project urls.py::
 
-    url(^'admin/', include('time_wizard.urls')),
+    path('admin/', include('time_wizard.urls')),
 
 5. Run `python manage.py migrate` to create the time_wizard models.
 
