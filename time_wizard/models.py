@@ -141,11 +141,11 @@ class HolidayRangePeriodModel(PeriodModel):
             delta2 = datetime.timedelta(minutes=mins)
         date1 = datetime.datetime.combine(
             selected_date + delta1,
-            self.start_time.time() if self.start_time else time_zero)
+            self.start_time if self.start_time else time_zero)
         d3 = datetime.timedelta(days=1 if not self.end_time else 0)
         date2 = datetime.datetime.combine(
             selected_date + delta2 + d3,
-            self.end_time.time() if self.end_time else time_zero)
+            self.end_time if self.end_time else time_zero)
         if date_time < date1 or date_time > date2:
             return False
         return True
