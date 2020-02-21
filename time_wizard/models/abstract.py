@@ -1,37 +1,16 @@
 import datetime
 
 import holidays
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from polymorphic.models import PolymorphicModel
 
 from time_wizard.conf import TIME_WIZARD_COUNTRIES
-from time_wizard.mixins import TimeWizardInlineMixin
-from time_wizard.workarounds import NON_POLYMORPHIC_CASCADE
 
 
-class PeriodModel(PolymorphicModel):
+class AbstractAbsoluteRangePeriod(models.Model):
     """
-    Parent model for custom periods.
-    """
-    content_type = models.ForeignKey(
-        'contenttypes.ContentType',
-        on_delete=NON_POLYMORPHIC_CASCADE,
-        related_name='periods',
-    )
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey()
-
-    def contains(self, date_time):
-        raise NotImplementedError("Override method in child class!")
-
-
-class AbsolutePeriodModel(PeriodModel):
-    """
-    Period child model for absolute time ranges from start to end.
+    Abstract base class for absolute time ranges.
     """
     start = models.DateTimeField(
         blank=True,
@@ -42,6 +21,9 @@ class AbsolutePeriodModel(PeriodModel):
         null=True,
     )
 
+    class Meta:
+        abstract = True
+
     def contains(self, date_time):
         if self.start and self.start > date_time:
             return False
@@ -50,13 +32,12 @@ class AbsolutePeriodModel(PeriodModel):
         return True
 
     def __str__(self):
-        return 'Absolute [%s - %s]' % (self.start, self.end)
+        return 'Absolute Range [%s - %s]' % (self.start, self.end)
 
 
-class HolidayRangePeriodModel(PeriodModel):
+class AbstractHolidayRangePeriod(models.Model):
     """
-    Period child model for holiday time ranges. Select a holiday and a range
-    before, after or both from this date.
+    Abstract base class for holiday time ranges.
     """
     time_value = models.PositiveSmallIntegerField(
         default=0,
@@ -106,6 +87,9 @@ class HolidayRangePeriodModel(PeriodModel):
         max_length=64,
     )
 
+    class Meta:
+        abstract = True
+
     def contains(self, date_time):
         holiday_cls = getattr(holidays, self.country, False)
         if holiday_cls:
@@ -152,24 +136,3 @@ class HolidayRangePeriodModel(PeriodModel):
 
     def __str__(self):
         return 'HolidayRange [%s - %s]' % (self.country, self.holiday)
-
-
-class TimeWizardModel(TimeWizardInlineMixin, models.Model):
-    """
-    Model for the TimeWizard.
-    """
-    name = models.CharField(
-        blank=True,
-        help_text=_('Optional name to identify the given TimeWizard.'),
-        max_length=255,
-    )
-
-    def __str__(self):
-        if self.name:
-            return self.name
-        else:
-            ct = ContentType.objects.get(app_label='time_wizard',
-                                         model='timewizardmodel')
-            return ' - '.join([str(s) for s in
-                               PeriodModel.objects.filter(content_type=ct,
-                                                          object_id=self.id)])

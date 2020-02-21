@@ -71,6 +71,11 @@ You can use the `TimeWizard` in different ways:
 * in both ways use `is_published` on your model to indicate if the content
   is shown or not.
 
+* create a custom `PeriodModel` as a base for custom
+  `AbsoluteRange`- and `HolidayRange`-models. There are abstract base classes
+  defined in `models/abstract.py`. This means you could for example create
+  classes without a generic relation, as `PeriodModel` itself has.
+
 Settings
 ========
 
