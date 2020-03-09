@@ -26,9 +26,6 @@ class Migration(migrations.Migration):
                     serialize=False,
                     verbose_name='ID')),
             ],
-            options={
-                'manager_inheritance_from_future': True,
-            },
         ),
         migrations.CreateModel(
             name='TimeWizardModel',
@@ -57,9 +54,6 @@ class Migration(migrations.Migration):
                     blank=True,
                     null=True)),
             ],
-            options={
-                'manager_inheritance_from_future': True,
-            },
             bases=('time_wizard.periodmodel',),
         ),
         migrations.CreateModel(
@@ -110,9 +104,6 @@ class Migration(migrations.Migration):
                 ('holiday', models.CharField(
                     max_length=64)),
             ],
-            options={
-                'manager_inheritance_from_future': True,
-            },
             bases=('time_wizard.periodmodel',),
         ),
         migrations.AddField(
