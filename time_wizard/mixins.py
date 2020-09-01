@@ -41,4 +41,7 @@ class TimeWizardMixin(models.Model):
 
     @property
     def is_published(self):
-        return self.time_wizard.is_published
+        if self.time_wizard_id:
+            return self.time_wizard.is_published
+        else:
+            return False
