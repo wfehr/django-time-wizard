@@ -2,6 +2,14 @@
 Changelog
 =========
 
+v3.0.1 (2023-01-13)
+===================
+
+- added missing migration due to updated `holidays` version
+- fixed `holidays` on version `0.18` -> newer versions may result in new
+  migrations which may be problematic if this app is integrated as a
+  third-party-app
+
 v3.0.0 (2023-01-13)
 ===================
 
