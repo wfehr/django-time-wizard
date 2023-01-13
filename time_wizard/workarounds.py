@@ -1,6 +1,4 @@
 # workarounds.py contains workarounds and monkey-patches for external issues.
-
-
 # TODO: Remove on release with bugfix
 # Problem: problems with polymorphic and on_delete=CASCADE
 # Issue: https://github.com/django-polymorphic/django-polymorphic/issues/

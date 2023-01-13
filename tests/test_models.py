@@ -4,6 +4,7 @@ import holidays
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.utils.timezone import now
+
 from time_wizard.models import (
     AbsolutePeriodModel, HolidayRangePeriodModel, TimeWizardModel,
 )

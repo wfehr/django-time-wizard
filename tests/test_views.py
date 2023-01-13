@@ -15,8 +15,7 @@ class TestTimeWizardModel(TestCase):
         response = load_holidays(request)
         holiday_cls = getattr(holidays, 'US')
         holidays_list = holiday_cls(years=now().year, prov='AL')
-        content = str(response.content)
-        content = content.replace('&#39;', "'")
+        content = response.content.decode("utf-8").replace('&#x27;', "'")
         self.assertIn('<option value="">---------</option>', content)
         for date, name in holidays_list.items():
             html = '<option value="{0}">{0} ('.format(name)
@@ -25,7 +24,7 @@ class TestTimeWizardModel(TestCase):
     def test_load_provinces(self):
         request = self.rf.get('/test/', {'country': 'US'})
         response = load_provinces(request)
-        content = str(response.content)
+        content = response.content.decode("utf-8").replace('&#x27;', "'")
         self.assertIn('<option value="">---------</option>', content)
         for province in TIME_WIZARD_COUNTRY_PROVINCES['US']:
             html = '<option value="{0}">{0}</option>'.format(province)
