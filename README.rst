@@ -98,3 +98,6 @@ Tests
 
 Setup your test environment with `virtualenv` and install the requirements
 with `pip install .`. Also install `tox` via pip and simply run `tox`.
+
+Tests can also be run via `devtools/run-tests`. This requires an environment
+where `docker` and `docker-compose` are installed.

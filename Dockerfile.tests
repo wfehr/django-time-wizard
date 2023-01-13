@@ -1,0 +1,19 @@
+FROM python:3.10.1-slim-bullseye
+
+RUN apt-get update && \
+    apt-get install -y \
+      default-libmysqlclient-dev \
+      build-essential \
+      wait-for-it \
+      python3.9 python3.9-distutils python3.9-dev
+
+RUN pip install tox
+
+WORKDIR /home/app
+
+COPY time_wizard/ /home/app/time_wizard/
+COPY tests/ /home/app/tests/
+COPY manage.py /home/app/manage.py
+COPY setup.py /home/app/setup.py
+COPY tox.ini /home/app/tox.ini
+COPY README.rst /home/app/README.rst

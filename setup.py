@@ -36,5 +36,4 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    test_suite='tests.settings.run',
 )
