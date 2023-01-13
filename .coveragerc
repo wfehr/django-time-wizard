@@ -2,8 +2,8 @@
 branch = True
 source = time_wizard
 omit =
-    migrations/*
-    tests/*
+    time_wizard/migrations/*
+    time_wizard/workarounds.py
 
 [report]
 exclude_lines =

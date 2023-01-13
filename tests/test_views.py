@@ -1,6 +1,7 @@
 import holidays
 from django.test import RequestFactory, TestCase
 from django.utils.timezone import now
+from django.urls import reverse
 
 from time_wizard.conf import TIME_WIZARD_COUNTRY_PROVINCES
 from time_wizard.views import load_holidays, load_provinces
@@ -29,3 +30,14 @@ class TestTimeWizardModel(TestCase):
         for province in TIME_WIZARD_COUNTRY_PROVINCES['US']:
             html = '<option value="{0}">{0}</option>'.format(province)
             self.assertIn(html, content)
+
+    def test_urls_definition(self):
+        urlconf = "time_wizard.urls"
+        cases = [
+            ("/load-holidays", "ajax-load-holidays"),
+            ("/load-provinces", "ajax-load-provinces"),
+        ]
+        for expected_path, url_name in cases:
+            with self.subTest(url_name):
+                actual_path = reverse(url_name, urlconf=urlconf)
+                self.assertEqual(expected_path, actual_path)

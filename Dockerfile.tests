@@ -17,3 +17,4 @@ COPY manage.py /home/app/manage.py
 COPY setup.py /home/app/setup.py
 COPY tox.ini /home/app/tox.ini
 COPY README.rst /home/app/README.rst
+COPY .coveragerc /home/app/.coveragerc
