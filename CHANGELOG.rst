@@ -2,6 +2,12 @@
 Changelog
 =========
 
+v3.0.2 (2023-09-28)
+===================
+
+- added `AppConfig.default_auto_field` to lock ID-fields in order to avoid
+  migrations if projects use a different field in their settings
+
 v3.0.1 (2023-01-13)
 ===================
 
