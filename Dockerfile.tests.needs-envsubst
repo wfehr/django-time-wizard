@@ -1,11 +1,11 @@
-FROM python:3.10.1-slim-bullseye
+FROM ${DOCKERFILE_VERSION}
 
 RUN apt-get update && \
     apt-get install -y \
       default-libmysqlclient-dev \
       build-essential \
       wait-for-it \
-      python3.9 python3.9-distutils python3.9-dev
+      python${ADDITIONAL_PYTHON_VERSION} python${ADDITIONAL_PYTHON_VERSION}-distutils python${ADDITIONAL_PYTHON_VERSION}-dev
 
 RUN pip install tox
 

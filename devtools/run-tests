@@ -1,9 +1,26 @@
 #!/bin/sh
 
-docker build . -f Dockerfile.tests -t time-wizard-unittests
-docker_compose="docker-compose -f $(dirname $0)/run-tests.compose.yaml"
+versions="python:3.10-slim-bullseye,3.9"
 
-$docker_compose run test tox
-exit_status=$?
-$docker_compose down -v
-exit $exit_status
+for vers in $versions; do
+  IFS="," read dockerfile_version additional_python_version <<EOF
+$vers
+EOF
+
+  export IMAGE="time-wizard-unittest-$dockerfile_version"
+  export DOCKERFILE_VERSION=$dockerfile_version
+  export ADDITIONAL_PYTHON_VERSION=$additional_python_version
+
+  echo "==============================="
+  echo "tests: $IMAGE"
+  echo "===============================\n"
+
+  envsubst '${DOCKERFILE_VERSION} ${ADDITIONAL_PYTHON_VERSION}' < Dockerfile.tests.needs-envsubst > /tmp/Dockerfile.tests-dtw
+  docker build . -f /tmp/Dockerfile.tests-dtw -t $IMAGE
+  docker_compose="docker compose -f $(dirname $0)/run-tests.compose.yaml"
+
+  $docker_compose run test tox
+  $docker_compose down -v
+
+  echo "\n\n"
+done
