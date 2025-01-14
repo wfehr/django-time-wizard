@@ -1,4 +1,0 @@
--r base.txt
-
-https://github.com/django/django/archive/master.zip
-django-polymorphic>=2.0
