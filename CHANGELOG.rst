@@ -2,6 +2,11 @@
 Changelog
 =========
 
+v4.0.1 (2025-01-15)
+===================
+
+- fixed typo in django requirement -> 5.1 is not yet tested
+
 v4.0.0 (2025-01-15)
 ===================
 
