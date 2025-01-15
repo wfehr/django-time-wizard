@@ -2,6 +2,14 @@
 Changelog
 =========
 
+v4.0.0 (2025-01-15)
+===================
+
+- adjusted testing environment
+- require minimum django 3.0 (older version are not tested)
+- added support for django v5.0
+- removed support for python 3.6 - 3.8 (may work, but not tested anymore)
+
 v3.0.2 (2023-09-28)
 ===================
 
