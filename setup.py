@@ -7,7 +7,7 @@ setup(
     version=__version__,
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'django>=3.0,<5.2',
+        'django>=3.0,<5.1',
         'django-polymorphic>=2.1.2,<5.0',
         # fixed version: different versions may result in migrations because
         # of field-choices for countries!
