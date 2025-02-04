@@ -9,7 +9,7 @@ setup(
     install_requires=[
         'django>=3.0,<5.1',
         'django-polymorphic>=2.1.2,<5.0',
-        'holidays',
+        'holidays>=0.23',
     ],
     include_package_data=True,
     description='Date and time dependend content manipulation',
