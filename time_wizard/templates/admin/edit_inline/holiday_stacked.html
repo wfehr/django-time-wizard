@@ -1,16 +1,36 @@
 {% include "admin/polymorphic/edit_inline/stacked.html" %}
+<div class="country-options" style="display: none;">
+  {% for c in country_choices %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+</div>
 <script type="text/javascript">
   if (!$) {
     var $ = django.jQuery
   }
 
   var setupSelects = function (panel) {
-    var fields = ['province', 'holiday']
+    var fields = ['country', 'province', 'holiday']
     fields.forEach(function (el) {
       var f = panel.find('.field-' + el)
       var fInput = f.find('input')
       var value = fInput[0].value
       fInput[0].outerHTML = '<select name="' + fInput[0].name + '" id="' + fInput[0].id + '" data-selected="' + value + '"></select>'
+    })
+  }
+
+  var setupCountryOptions = function (panel) {
+    var cItem = panel.find('.field-country')
+    var cSelect = cItem.find('select')
+    var options = $('.country-options option')
+    var optionValues = options.map(function () { return $(this).val() }).get()
+    var selectedCountry = cSelect.data('selected')
+    if (!optionValues.includes(selectedCountry)) {
+      cSelect.append($('<option value="' + selectedCountry + '">' + selectedCountry + ' (no longer available)</option>'))
+    }
+    cSelect.append(options)
+    cSelect.find('option').each(function () {
+      if ($(this).val() === selectedCountry) {
+        $(this).attr('selected', 1)
+      }
     })
   }
 
@@ -105,6 +125,7 @@
     var panels = $('.inline-holidayrangeperiodmodel')
     panels.each(function () {
       setupSelects($(this))
+      setupCountryOptions($(this))
       setupProvinceOptions($(this))
       setupEvents($(this))
     })

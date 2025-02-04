@@ -5,8 +5,6 @@ from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from time_wizard.conf import TIME_WIZARD_COUNTRIES
-
 
 class AbstractAbsoluteRangePeriod(models.Model):
     """
@@ -76,7 +74,6 @@ class AbstractHolidayRangePeriod(models.Model):
         null=True,
     )
     country = models.CharField(
-        choices=((c, c) for c in TIME_WIZARD_COUNTRIES),
         max_length=8,
     )
     province = models.CharField(
@@ -84,7 +81,7 @@ class AbstractHolidayRangePeriod(models.Model):
         max_length=8,
     )
     holiday = models.CharField(
-        max_length=64,
+        max_length=255,
     )
 
     class Meta:
