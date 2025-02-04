@@ -2,6 +2,15 @@
 Changelog
 =========
 
+v4.1.0 (2025-02-04)
+===================
+
+- made holiday choices (countries) dynamic - no more migrations for updated
+  dependencies
+- updated handling for country/province - only holidays use a Javascript-request
+  now
+- removed version fixation for holidays dependency (at least v.0.23 required)
+
 v4.0.1 (2025-01-15)
 ===================
 
