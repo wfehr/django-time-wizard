@@ -1,20 +1,11 @@
-import inspect
-import sys
-
-import holidays
 from django.conf import settings
+from holidays.utils import list_supported_countries
 
-countries = []
-country_provinces = {}
-for i in inspect.getmembers(sys.modules['holidays'], inspect.isclass):
-    if issubclass(i[1], holidays.HolidayBase) and len(i[0]) < 4:
-        countries.append(i[0])
-        provinces_states = getattr(i[1], 'PROVINCES', []) or \
-            getattr(i[1], 'STATES', [])
-        country_provinces.update({i[0]: provinces_states})
+_country_provinces = list_supported_countries(include_aliases=False)
+_countries = list(_country_provinces.keys())
 
 
-TIME_WIZARD_COUNTRIES = getattr(settings, 'TIME_WIZARD_COUNTRIES', countries)
+TIME_WIZARD_COUNTRIES = getattr(settings, 'TIME_WIZARD_COUNTRIES', _countries)
 TIME_WIZARD_COUNTRY_PROVINCES = getattr(settings,
                                         'TIME_WIZARD_COUNTRY_PROVINCES',
-                                        country_provinces)
+                                        _country_provinces)

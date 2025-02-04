@@ -1,11 +1,11 @@
 {% include "admin/polymorphic/edit_inline/stacked.html" %}
-<div class="country-options" style="display: none;">
-  {% for c in country_choices %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
-</div>
 <script type="text/javascript">
   if (!$) {
     var $ = django.jQuery
   }
+
+  const countryOptions = {{ countries }}
+  const countryProvinceOptions = {{ country_provinces }}
 
   var setupSelects = function (panel) {
     var fields = ['country', 'province', 'holiday']
@@ -20,17 +20,14 @@
   var setupCountryOptions = function (panel) {
     var cItem = panel.find('.field-country')
     var cSelect = cItem.find('select')
-    var options = $('.country-options option')
-    var optionValues = options.map(function () { return $(this).val() }).get()
     var selectedCountry = cSelect.data('selected')
-    if (!optionValues.includes(selectedCountry)) {
-      cSelect.append($('<option value="' + selectedCountry + '">' + selectedCountry + ' (no longer available)</option>'))
+    if (!countryOptions.includes(selectedCountry)) {
+      var add = selectedCountry !== '' ? ' (no longer available)' : '---------'
+      cSelect.append($('<option value="' + selectedCountry + '">' + selectedCountry + add + '</option>'))
     }
-    cSelect.append(options)
-    cSelect.find('option').each(function () {
-      if ($(this).val() === selectedCountry) {
-        $(this).attr('selected', 1)
-      }
+    countryOptions.forEach(function (item) {
+      var selected = item === selectedCountry ? " selected" : ""
+      cSelect.append($('<option value="' + item + '"' + selected + '>' + item + '</option>'))
     })
   }
 
@@ -59,42 +56,27 @@
 
   var setupProvinceOptions = function (panel) {
     var pItem = panel.find('.field-province')
-    var selectedCountry = pItem.parent().find('.field-country').find('select')[0].value
-    var pXHR = new XMLHttpRequest()
-    pXHR.onreadystatechange = function () {
-      if (pXHR.readyState == XMLHttpRequest.DONE) {
-        pItem.find('select')[0].innerHTML = pXHR.responseText
-        var selectedProvince = pItem.find('select').data('selected')
-        if (selectedProvince) {
-          pItem.find('select').find('option').each(function () {
-            if ($(this)[0].value === selectedProvince) {
-              $(this).attr('selected', 1)
-            }
-          })
-        }
-        // call setupHolidayOptions after finishing the request to prevent
-        // race-conditions
-        setupHolidayOptions(panel)
-      }
-    }
-    var pURL = "{% url 'ajax-load-provinces' %}?country=" + selectedCountry
-    pXHR.open('GET', pURL)
-    pXHR.send()
-  }
+    var pSelect = pItem.find('select')
+    var selectedCountry = panel.find('.field-country select').val()
+    var selectedProvince = pSelect.data('selected')
 
-  var setupCountryEvents = function (panel) {
-    panel.find('.field-country').change(function (e) {
-      var pItem = $(this).parent().find('.field-province')
-      var pXHR = new XMLHttpRequest()
-      pXHR.onreadystatechange = function () {
-        if (pXHR.readyState == XMLHttpRequest.DONE) {
-          pItem.find('select')[0].innerHTML = pXHR.responseText
-        }
-      }
-      var cURL = "{% url 'ajax-load-provinces' %}?country=" + e.target.value
-      pXHR.open('GET', cURL)
-      pXHR.send()
-    })
+    pSelect.empty()
+
+    pSelect.append($('<option value>---------</option>'))
+    if (selectedProvince && (
+        !(selectedCountry in countryProvinceOptions) ||
+        !(countryProvinceOptions[selectedCountry].includes(selectedProvince))
+       )
+    ) {
+      pSelect.append($('<option value="' + selectedProvince + '" selected>' + selectedProvince + ' (no longer available)</option>'))
+    }
+    if (selectedCountry in countryProvinceOptions) {
+      countryProvinceOptions[selectedCountry].forEach(function (item) {
+        var selected = item === selectedProvince ? " selected": ""
+        pSelect.append($('<option value="' + item + '"' + selected + '>' + item + '</option>'))
+      })
+    }
+    setupHolidayOptions(panel)
   }
 
   var setupHolidayEvents = function (panel) {
@@ -117,7 +99,7 @@
   }
 
   var setupEvents = function (panel) {
-    setupCountryEvents(panel)
+    panel.find('.field-country select').change(function () { setupProvinceOptions(panel) })
     setupHolidayEvents(panel)
   }
 

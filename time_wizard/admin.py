@@ -1,9 +1,14 @@
+import json
+
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 from polymorphic.admin import (
     GenericStackedPolymorphicInline, PolymorphicInlineSupportMixin,
 )
 
-from time_wizard.conf import TIME_WIZARD_COUNTRIES
+from time_wizard.conf import (
+    TIME_WIZARD_COUNTRIES, TIME_WIZARD_COUNTRY_PROVINCES,
+)
 from time_wizard.models import (
     AbsolutePeriodModel, HolidayRangePeriodModel, PeriodModel, TimeWizardModel,
 )
@@ -30,7 +35,12 @@ class TimeWizardModelAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
-        extra_context["country_choices"] = TIME_WIZARD_COUNTRIES
+        extra_context["countries"] = mark_safe(
+            json.dumps(TIME_WIZARD_COUNTRIES)
+        )
+        extra_context["country_provinces"] = mark_safe(
+            json.dumps(TIME_WIZARD_COUNTRY_PROVINCES)
+        )
         return super().change_view(
             request,
             object_id,
