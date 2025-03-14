@@ -16,10 +16,11 @@ class TimeWizardModel(TimeWizardInlineMixin, models.Model):
     )
 
     def __str__(self):
+        prefix = str(self.pk) + " - "
         if self.name:
-            return self.name
+            return prefix + self.name
         else:
             ct = ContentType.objects.get_for_model(self)
-            return ' - '.join(
+            return prefix + ' - '.join(
                 [str(s) for s in self.periods.model.objects.filter(
                  content_type=ct, object_id=self.id)])

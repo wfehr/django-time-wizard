@@ -104,14 +104,14 @@ class TestTimeWizardModel(TestCase):
             object_id=time_wizard.id,
             start=self.now_earlier,
         )
-        self.assertEqual(str(absolute_period_1), str(time_wizard))
+        self.assertEqual('1 - ' + str(absolute_period_1), str(time_wizard))
         absolute_period_2 = AbsolutePeriodModel.objects.create(
             content_type=self.ct,
             object_id=time_wizard.id,
             start=self.now_earlier,
         )
-        self.assertEqual('{} - {}'.format(str(absolute_period_1),
-                                          str(absolute_period_2)),
+        self.assertEqual('1 - {} - {}'.format(str(absolute_period_1),
+                                              str(absolute_period_2)),
                          str(time_wizard))
         time_wizard.name = 'Test time wizard'
-        self.assertEqual(time_wizard.name, str(time_wizard))
+        self.assertEqual('1 - ' + time_wizard.name, str(time_wizard))
