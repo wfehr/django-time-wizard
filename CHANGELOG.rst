@@ -2,6 +2,13 @@
 Changelog
 =========
 
+v4.1.1 (2025-03-14)
+===================
+
+- fix missing context when creating new instances
+- always provide a string via '__str__'-method
+
+
 v4.1.0 (2025-02-04)
 ===================
 
