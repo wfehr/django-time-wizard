@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.timezone import now
 
@@ -13,6 +14,13 @@ class TimeWizardInlineMixin(models.Model):
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        prefix = str(self.pk) + ' - '
+        ct = ContentType.objects.get_for_model(self)
+        return prefix + ' - '.join(
+            [str(s) for s in self.periods.model.objects.filter(
+             content_type=ct, object_id=self.id)])
 
     @property
     def is_published(self):
@@ -38,6 +46,9 @@ class TimeWizardMixin(models.Model):
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return str(self.time_wizard)
 
     @property
     def is_published(self):
