@@ -33,20 +33,35 @@ class TimeWizardModelAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     model = TimeWizardModel
     inlines = [PeriodModelInline]
 
+    def add_view(self, request, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        extra_context.update(self.get_extra_selection_context())
+        return super().add_view(
+            request,
+            form_url=form_url,
+            extra_context=extra_context,
+        )
+
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
-        extra_context["countries"] = mark_safe(
-            json.dumps(TIME_WIZARD_COUNTRIES)
-        )
-        extra_context["country_provinces"] = mark_safe(
-            json.dumps(TIME_WIZARD_COUNTRY_PROVINCES)
-        )
+        extra_context.update(self.get_extra_selection_context())
         return super().change_view(
             request,
             object_id,
             form_url=form_url,
             extra_context=extra_context,
         )
+
+    @classmethod
+    def get_extra_selection_context(cls):
+        return {
+            "countries": mark_safe(
+                json.dumps(TIME_WIZARD_COUNTRIES)
+            ),
+            "country_provinces": mark_safe(
+                json.dumps(TIME_WIZARD_COUNTRY_PROVINCES)
+            ),
+        }
 
 
 admin.site.register(TimeWizardModel, TimeWizardModelAdmin)
