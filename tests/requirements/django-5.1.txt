@@ -1,0 +1,4 @@
+-r base.txt
+
+django>=5.1,<5.2
+django-polymorphic>=2.0

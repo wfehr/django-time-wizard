@@ -7,7 +7,7 @@ setup(
     version=__version__,
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'django>=3.0,<5.1',
+        'django>=3.0,<5.3',
         'django-polymorphic>=2.1.2,<5.0',
         'holidays>=0.23',
     ],
@@ -28,6 +28,8 @@ setup(
         'Framework :: Django :: 4.1',
         'Framework :: Django :: 4.2',
         'Framework :: Django :: 5.0',
+        'Framework :: Django :: 5.1',
+        'Framework :: Django :: 5.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
